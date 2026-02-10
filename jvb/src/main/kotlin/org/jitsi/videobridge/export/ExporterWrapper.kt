@@ -17,7 +17,6 @@ package org.jitsi.videobridge.export
 
 import org.jitsi.mediajson.TranscriptionResultEvent
 import org.jitsi.nlj.PacketInfo
-import org.jitsi.nlj.format.OpusPayloadType
 import org.jitsi.nlj.rtp.AudioRtpPacket
 import org.jitsi.utils.logging2.Logger
 import org.jitsi.utils.logging2.createChildLogger
@@ -49,10 +48,6 @@ class ExporterWrapper(
     /** Whether we want to accept a packet. */
     override fun wants(packet: PacketInfo): Boolean {
         if (!isConnected() || packet.packet !is AudioRtpPacket) return false
-        if (packet.payloadType !is OpusPayloadType) {
-            logger.warn("Ignore audio with unsupported payload type: ${packet.payloadType}")
-            return false
-        }
         return true
     }
 
