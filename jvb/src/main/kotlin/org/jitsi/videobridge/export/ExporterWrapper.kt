@@ -81,7 +81,23 @@ class ExporterWrapper(
         val httpHeaders = connect.getHttpHeaders().associate { header ->
             header.name to header.value
         }
-        exporter = Exporter(connect.url, httpHeaders, logger, handleTranscriptionResult).apply {
+
+        // Extract ping configuration if present
+        val ping = connect.getPing()
+        val pingEnabled = ping != null
+        // Default values in case ping is enabled, but no values are specified.
+        val pingIntervalMs = ping?.interval ?: 10000
+        val pingTimeoutMs = ping?.timeout ?: 3000
+
+        exporter = Exporter(
+            connect.url,
+            httpHeaders,
+            logger,
+            handleTranscriptionResult,
+            pingEnabled,
+            pingIntervalMs,
+            pingTimeoutMs
+        ).apply {
             start()
         }
         started = true
