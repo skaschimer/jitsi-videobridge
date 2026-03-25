@@ -397,7 +397,9 @@ class Relay @JvmOverloads constructor(
 
             override fun connected() {}
 
-            override fun failed() {}
+            override fun failed() {
+                VideobridgeMetrics.relaysIceFailed.inc()
+            }
 
             override fun consentUpdated(time: Instant) {
                 transceiver.packetIOActivity.lastIceActivityInstant = time
@@ -1025,6 +1027,11 @@ class Relay @JvmOverloads constructor(
             it.mediaType == MediaType.VIDEO
         }.sumOf { it.durationActive }
         VideobridgeMetrics.totalVideoStreamMillisecondsReceived.add(durationActiveVideo.toMillis())
+
+        if (iceTransport.isConnected() && !dtlsTransport.isConnected) {
+            logger.info("Expiring a relay with ICE connected, but not DTLS.")
+            VideobridgeMetrics.relaysDtlsFailed.inc()
+        }
     }
 
     fun expire() {
