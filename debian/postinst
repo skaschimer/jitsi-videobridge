@@ -36,7 +36,12 @@ case "$1" in
             JVB_HOSTNAME="$JVB_HOSTNAME_IN"
             if [ "$OLDCONFIG" = "false" ]; then
                 # 8-chars random secret, alternative to pwgen 8
-                JVB_SECRET=`head -c 8 /dev/urandom | tr '\0-\377' 'a-zA-Z0-9a-zA-Z0-9a-zA-Z0-9a-zA-Z0-9@@@@####'`
+                db_get jitsi-videobridge/jvbsecret
+                if [ -n "$RET" ]; then
+                    JVB_SECRET="$RET"
+                else
+                    JVB_SECRET=`head -c 8 /dev/urandom | tr '\0-\377' 'a-zA-Z0-9a-zA-Z0-9a-zA-Z0-9a-zA-Z0-9@@@@####'`
+                fi
             fi
         fi
 
